@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -53,12 +54,48 @@ public class TodoService {
     }
 
     public void removeAllCompleted() {
-        todoRepository.deleteAllByStatus(Status.COMPLETE);
+        Optional<List<Todo>> allByStatus = todoRepository.findAllByStatus(Status.COMPLETE);
+        if (allByStatus.isPresent()){
+            List<Todo> todos = allByStatus.get();
+            for (Todo todo : todos) {
+                todoRepository.deleteById(todo.getId());
+            }
+        }
     }
 
     public void toggleAllStatus(boolean complete) {
         List<Todo> all = todoRepository.findAll();
         all.forEach(t -> t.setStatus(complete ? Status.COMPLETE : Status.ACTIVE));
         todoRepository.saveAll(all);
+    }
+
+    public void removeById(Long id) {
+        todoRepository.deleteById(id);
+    }
+
+    public void updateById(String todoTitle, Long id) {
+        Optional<Todo> todoOptional = todoRepository.findById(id);
+        if (todoOptional.isPresent()){
+            Todo todo = todoOptional.get();
+            todo.setTitle(todoTitle);
+            todoRepository.save(todo);
+        }
+    }
+
+    public Todo findById(Long id) {
+        Optional<Todo> todoOptional = todoRepository.findById(id);
+        if (todoOptional.isPresent()){
+            return todoOptional.get();
+        } else throw new NoSuchElementException();
+    }
+
+    public void toggleStatus(boolean status, Long id) {
+        Optional<Todo> todoOptional = todoRepository.findById(id);
+        if (todoOptional.isPresent()) {
+            Todo todo = todoOptional.get();
+            todo.setStatus(status ? Status.COMPLETE : Status.ACTIVE);
+            todoRepository.save(todo);
+        }
+
     }
 }

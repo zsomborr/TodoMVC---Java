@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface TodoRepository extends JpaRepository<Todo, Long> {
     Optional<List<Todo>> findAllByStatus(Status status);
-    void deleteAllByStatus(Status status);
+    void deleteByStatus(Status status);
 }

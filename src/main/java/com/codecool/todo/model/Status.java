@@ -1,4 +1,4 @@
-package model;
+package com.codecool.todo.model;
 
 public enum Status {
     ACTIVE,
